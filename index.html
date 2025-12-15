@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9 ke Bachche AJPS</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif}
+
+body{background:#fdf6f0;padding:2rem;overflow-x:hidden}
+
+header{text-align:center;margin-bottom:2rem}
+header h1{font-size:2.5rem;color:#ff6f61}
+header p{color:#555}
+
+ul{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1rem;
+  list-style:none;
+  max-width:900px;
+  margin:auto
+}
+
+li{
+  background:#fff3e6;
+  padding:1rem;
+  border-radius:10px;
+  text-align:center;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(0,0,0,.1);
+  transition:.2s
+}
+li:hover{transform:translateY(-4px)}
+
+footer{text-align:center;margin-top:2rem;color:#777}
+
+/* OVERLAY */
+#overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(6px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:1000;
+  overflow:hidden;
+}
+
+#statusBox{
+  background:white;
+  padding:2rem 3rem;
+  border-radius:15px;
+  font-size:1.8rem;
+  font-weight:600;
+}
+
+/* FIREWORKS */
+.firework{
+  position:absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  animation:explode 1s ease-out forwards;
+}
+
+@keyframes explode{
+  to{
+    transform:translate(var(--x),var(--y));
+    opacity:0;
+  }
+}
+
+/* SIGNBOARD TEXT */
+#thanksText{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:3rem;
+  font-weight:900;
+  text-align:center;
+  pointer-events:none;
+  z-index:2000;
+  background:white;
+  padding:1rem 2rem;
+  border-radius:10px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.3);
+  animation:swing 2s ease-in-out infinite;
+}
+
+@keyframes swing{
+  0%{transform:translate(-50%,-50%) rotate(-10deg);}
+  25%{transform:translate(-50%,-50%) rotate(10deg);}
+  50%{transform:translate(-50%,-50%) rotate(-8deg);}
+  75%{transform:translate(-50%,-50%) rotate(8deg);}
+  100%{transform:translate(-50%,-50%) rotate(-10deg);}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>9 ke Bachche AJPS</h1>
+<p>Click on your name</p>
+</header>
+
+<ul id="nameList"></ul>
+
+<div id="overlay">
+  <div id="statusBox">Verifying...</div>
+</div>
+
+<audio id="blastSound">
+  <source src="https://www.soundjay.com/explosion/sounds/explosion-01.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const names=[
+"Akanksha Jain","Anukool Rajawat","Anuradha Baghel","Ayush Bhadoriya",
+"Babita Tomar","Bhanu Pratap","Chandan Singh","Devesh Kumar",
+"Geetesh Kushwah","Keshav Pandey","Laxmi Namdev","Manav Rajawat",
+"Palak Rajawat","Poonam Sharman","Prashant Singh","Radha Prajapati",
+"Radha Prihaar","Rishabh Sharma","Rudransh Singh","Rupali Soni",
+"Sandhya","Sachin Tyagi","Shivani Sharma","Shyam Singh",
+"Sneha Chauhan","Sonakshi Chauhan","Tanishka Shriwas",
+"Viveki Rajawat","Vaishnavi Pandey","Ramayani Sharma","Roshni Maheshwari"
+].sort();
+
+const ul=document.getElementById("nameList");
+const overlay=document.getElementById("overlay");
+const statusBox=document.getElementById("statusBox");
+const sound=document.getElementById("blastSound");
+
+let firstClick=true;
+
+names.forEach(n=>{
+  const li=document.createElement("li");
+  li.textContent=n;
+  li.onclick=verify;
+  ul.appendChild(li);
+});
+
+function verify(){
+  overlay.style.display="flex";
+  statusBox.style.display="block";
+  statusBox.textContent="Verifying...";
+
+  setTimeout(()=>{
+    if(firstClick){
+      statusBox.style.display="none";
+      sound.currentTime=0;
+      sound.play();
+      startFireworks();
+      showTextSequence();
+      firstClick=false;
+    }else{
+      statusBox.style.display="block";
+      statusBox.textContent="User Not Verified ❌";
+    }
+  },2000);
+
+  setTimeout(()=>{
+    overlay.style.display="none";
+    clearFireworks();
+    removeText();
+  },12000); // overlay disappears after full sequence
+}
+
+// FIREWORKS
+let fireworksInterval;
+function startFireworks(){
+  fireworksInterval = setInterval(fireworks, 300);
+}
+
+function fireworks(){
+  for(let i=0;i<30;i++){
+    const f=document.createElement("div");
+    f.className="firework";
+    f.style.background=`hsl(${Math.random()*360},100%,50%)`;
+    f.style.left=`${Math.random()*100}%`;
+    f.style.top=`${Math.random()*100}%`;
+    f.style.setProperty("--x",`${(Math.random()-0.5)*600}px`);
+    f.style.setProperty("--y",`${(Math.random()-0.5)*600}px`);
+    overlay.appendChild(f);
+  }
+  setTimeout(()=>{
+    document.querySelectorAll(".firework").forEach(f=>f.remove());
+  },1000);
+}
+
+function clearFireworks(){
+  clearInterval(fireworksInterval);
+  document.querySelectorAll(".firework").forEach(f=>f.remove());
+}
+
+// SIGNBOARD TEXT SEQUENCE
+function showTextSequence(){
+  const t=document.createElement("div");
+  t.id="thanksText";
+  overlay.appendChild(t);
+
+  t.textContent="Thanks for Visiting Our Website"; // 2 sec
+  setTimeout(()=>{ t.textContent="Dikh Gaya Jaadu 😂"; },2000); // next 3 sec
+  setTimeout(()=>{ t.textContent="Ab Padhai Karle Exams Hai 😅"; },5000); // last 5 sec
+}
+
+function removeText(){
+  const t=document.getElementById("thanksText");
+  if(t) t.remove();
+}
+</script>
+
+<footer>&copy; Created by Rudransh Singh</footer>
+
+</body>
+</html>
